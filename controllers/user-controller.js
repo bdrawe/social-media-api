@@ -1,5 +1,3 @@
-const { User, Thought } = require('../models');
-
 const { User } = require('../models');
 
 const userController =  {
@@ -15,15 +13,15 @@ const userController =  {
         })
         .select( "-__v")
         .sort({_id: -1 })
-        .then(dbUserData => {
+        .then(dbUserData => 
             res.json(dbUserData)
-        })
+        )
         .catch(err => {
             console.log(err)
             res.status(400).json(err)
         });
     },
-    getOneUserById({params}, res){
+    getUserById({params}, res) {
         User.findOne({_id: params.id})
         .populate({
             path: 'thoughts',
@@ -64,5 +62,56 @@ const userController =  {
             console.log(err)
             res.status(400).json(err)
         })
+    },
+    deleteUser({params}, res){
+        User.findByIdAndDelete(params.id)
+        .then(dbUserData =>{
+            if(!dbUserData){
+                res.status(404).json({message: "Cannot find a user with that id"});
+                return
+            }
+            res.json(dbUserData)
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(400).json(err)
+        })
+    },
+    addFriend({params}, res){
+        User.findOneAndUpdate(
+            {_id: params.Userid},
+            {$push: {friends: params.friendId}},
+            {new: true}
+        )
+        .then(dbUserData =>{
+            if(!dbUserData){
+                res.status(404).json({message: "Cannot find a user with that id"});
+                return
+            }
+            res.json(dbUserData)
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(400).json(err)
+        })
+    },
+    deleteFriend({params}, res){
+        User.findOneAndUpdate(
+            {_id: params.Userid},
+            {$pull: {friends: params.friendId}},
+            {new: true}
+        )
+        .then(dbUserData =>{
+            if(!dbUserData){
+                res.status(404).json({message: "Cannot find a user with that id"});
+                return
+            }
+            res.json(dbUserData)
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(400).json(err)
+        })
     }
 }
+module.exports = userController;
