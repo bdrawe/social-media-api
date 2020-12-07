@@ -47,7 +47,7 @@ const thoughtController = {
             res.status(400).json(err);
         })
     },
-    updateThought({body}, res){
+    updateThought({params,body}, res){
         Thought.findOneAndUpdate({_id: params.id}, body, {new:true})
         .then(dbThoughtData => {
             if(!dbThoughtData){
@@ -110,7 +110,7 @@ const thoughtController = {
         Thought.findOneAndUpdate(
             {_id: params.thoughtId },
             { $pull: {reactions: {reactionId: params.reactionId}}},
-            {new: true}
+            { new: true}
         )
         .then(dbThoughtData => res.json(dbThoughtData))
         .catch(err => res.json(err));
